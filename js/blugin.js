@@ -8,7 +8,7 @@ $(document).ready(function () {
         interval: 2500
     });
     //navbar
-
+});
     var scroll_start = 0;
     var startChange = $('.header-info');
     var offset = startChange.offset();
@@ -44,44 +44,65 @@ $(document).ready(function () {
     //counter
 
 
-    $(function () {
-        function isScrolledIntoView($elem) {
-            var docViewTop = $(window).scrollTop();
-            var docViewBottom = docViewTop + $(window).height();
-            var elemTop = $elem.offset().top;
-            var elemBottom = elemTop + $elem.height();
-            return ((elemBottom <= docViewBottom) && (elemTop >= docViewTop));
-        }
-
-        function count($this) {
-            var current = parseInt($this.html(), 10);
-            if (isScrolledIntoView($this) && !$this.data("isCounting") && current < $this.data('count')) {
-                $this.html(++current);
-                $this.data("isCounting", true);
-                setTimeout(function () {
-                    $this.data("isCounting", false);
-                    count($this);
-                }, 50);
-            }
-        }
-
-        $(".c-count").each(function () {
-            $(this).data('count', parseInt($(this).html(), 10));
-            $(this).html('0');
-            $(this).data("isCounting", false);
-        });
-
-        function startCount() {
-            $(".c-count").each(function () {
-                count($(this));
+    function countUp() {
+        $('.count').each(function() {
+            $(this).prop('Counter', 0).animate({
+              Counter: $(this).text()
+            }, {
+              duration: 4000,
+              easing: 'swing',
+              step: function(now) {
+                $(this).text(Math.ceil(now));
+              }
             });
-        };
+          });
+        }
+        $(function() {
+          "user strict";
+          var bAnimate = true;
+          $(".count").css ("opacity", "0.0");
+          
+          $(window).scroll(function() {
+            // console.log("scroll top=" + $(this).scrollTop());
+            // console.log("div offset top=" + $("div").offset().top);
+            var scrolling = $(this).scrollTop(),
+              divoffset = $(".count").offset().top,
+              screenBottom = scrolling + $(window).height(), 
+              elemBottom = divoffset + $(".count").outerHeight (); // 
+            if (screenBottom > elemBottom) {
+              if (bAnimate) {
+                 $(".count").css ("opacity", "1.0");
+                countUp();
+                bAnimate = false;
+              }
+            }
+          })
+        })
 
-        $(window).scroll(function () {
-            startCount();
-        });
+        
+        $(window).scroll(function(){
+            let scrollTop = $(window).scrollTop();
+            if(scrollTop >1500){
+                $("#btnUp").fadeIn(500);
+            }else{
+                $("#btnUp").fadeOut(500);
+            }
+            })
+            $("#btnUp").click(function(){
+                $("body,html").animate({"scrollTop":0},1000);
+            })
+            
+            /***smoth scroll on links on navs */
+            $("nav a, .home-down").click(function(){
+                let aHref =$(this).attr("href");
+                let offsett=$(aHref).offset().top;
+                $("body, html").animate({scrollTop:offsett},1000);
+            })
+            
+            /***loadingscreen */
+            $(window).ready(function(){
+                $("#loadingS").fadeOut(2000,function(){
+                    $("body").css("overflow","auto");
+                })
+            })
 
-        startCount();
-    });
-
-});
